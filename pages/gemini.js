@@ -1,23 +1,38 @@
 import { useState } from 'react';
 import Head from 'next/head';
-import Link from 'next/link';
-import { useSession } from 'next-auth/react';
+import { useSession, signIn } from 'next-auth/react';
 
 export default function GeminiChat() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [prompt, setPrompt] = useState('');
   const [response, setResponse] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // You could also use a `getServerSideProps` check here to protect the page
-  if (!session) {
+  // Handle loading state
+  if (status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <p className="text-lg text-gray-700">Please <Link href="/login" className="text-blue-600 underline">log in</Link> to access this page.</p>
+      <div className="min-h-screen flex items-center justify-center">
+        <p>Loading...</p>
       </div>
     );
   }
 
+  // Handle unauthenticated state
+  if (status === "unauthenticated") {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-4">
+        <p className="text-lg text-gray-700 mb-4">You must be signed in to view this page.</p>
+        <button
+          onClick={() => signIn('github')}
+          className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300"
+        >
+          Sign in with GitHub
+        </button>
+      </div>
+    );
+  }
+
+  // Authenticated state: render the main component
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!prompt) return;
@@ -52,7 +67,8 @@ export default function GeminiChat() {
       </Head>
       <div className="min-h-screen p-8 flex flex-col items-center">
         <div className="max-w-xl w-full bg-white rounded-lg shadow-xl p-8">
-          <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Gemini AI Assistant</h1>
+          <h1 className="text-3xl font-bold text-center text-gray-800 mb-6">Welcome, {session.user.name}!</h1>
+          <h2 className="text-xl font-bold text-center text-gray-600 mb-6">Gemini AI Assistant</h2>
           <form onSubmit={handleSubmit} className="mb-6">
             <textarea
               className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow duration-300"
