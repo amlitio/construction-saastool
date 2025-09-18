@@ -46,6 +46,7 @@ export default function Dashboard() {
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-3xl font-bold">Dashboard</h1>
         <div className="flex space-x-4">
+          <Link href="/expenses" className="px-4 py-2 bg-green-600 text-white rounded">Expense Tracker</Link>
           <Link href="/gemini" className="px-4 py-2 bg-purple-600 text-white rounded">Gemini Chat</Link>
           <button onClick={() => signOut()} className="px-4 py-2 bg-gray-600 text-white rounded">Logout</button>
         </div>
